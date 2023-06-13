@@ -11,17 +11,21 @@ var reader = rand.Reader
 const cards = 52
 
 func main() {
-	var i int8
-	allCards := make([]int8, cards)
-	for i = 1; i <= cards; i++ {
-		allCards[i-1] = i
+	t := Table{
+		minPlayers:   2,
+		maxPlayers:   6,
+		minBuyin:     10,
+		totalPlayers: 0,
+		deler:        0,
+		bbAmount:     25,
+		sbAmount:     10,
+	}
+	// this will start adding the players on the table
+
+	for i := 0; i < 10; i++ {
+		t.addPlayers()
 	}
 
-	cd := CardsDeck{
-		cards: allCards,
-		size:  cards,
-	}
-	// need to start game on a table
-	card, suite := cd.cardDistributer()
+	t.startNewGame()
 
 }

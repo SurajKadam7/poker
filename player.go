@@ -24,13 +24,11 @@ type Player struct {
 	cards    [][]int8
 	amount   int64
 	hand     Hand
-	isBB     bool
-	isSB     bool
-	isDeler  bool
 	isAllIn  bool
 	isFold   bool
 	canCheck bool
 	isRaised bool
+	name     string
 }
 
 func (p *Player) Raise() {

@@ -1,10 +1,9 @@
 package main
 
 type Game struct {
-	players      []*Player
+	players      []Player
 	totalPlayers int8
 
-	deler       int8
 	sb          int8
 	bb          int8
 	firstPlayer int8
@@ -28,6 +27,8 @@ type Game struct {
 
 	winners  [][]int8
 	totalPot int64
+
+	playersInGame int8
 }
 
 func (g *Game) deltCards() {
@@ -45,7 +46,25 @@ func (g *Game) deltCards() {
 
 }
 
+func (g *Game) newCardDeck() *CardsDeck {
+	var i int8
+	allCards := make([]int8, cards)
+	for i = 1; i <= cards; i++ {
+		allCards[i-1] = i
+	}
+
+	cd := CardsDeck{
+		cards: allCards,
+		size:  cards,
+	}
+
+	return &cd
+}
+
 func (g *Game) startGame() {
+	// create new card deck
+	g.cd = g.newCardDeck()
+
 	// cutting amount from bb and sb
 	g.players[g.bb].amount -= g.bbAmout
 	g.players[g.sb].amount -= g.sbAmount
@@ -54,7 +73,7 @@ func (g *Game) startGame() {
 	g.firstPlayer = g.sb
 
 	// bb will raise the amound first time in the game
-	g.raisedPlayer = g.bb
+	g.raisedPlayer = (g.bb + 1) % g.totalPlayers
 
 	// card distribution will start here
 	g.deltCards()
@@ -109,7 +128,12 @@ func (g *Game) HandleRounds() {
 			}
 		}
 		g.startRound()
+		// this is for all fold case situation ...
+		if g.playersInGame == 1 {
+			return
+		}
 		g.stage += 1
+		g.raisedPlayer = g.firstPlayer
 	}
 }
 
@@ -125,6 +149,10 @@ func (g *Game) startRound() {
 			if g.players[i].isRaised {
 				g.raisedPlayer = i
 				g.players[i].isRaised = false
+			}
+
+			if g.players[i].isFold {
+				g.playersInGame--
 			}
 		}
 
